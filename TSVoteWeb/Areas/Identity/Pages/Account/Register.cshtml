@@ -1,0 +1,156 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h3>Crear una nueva cuenta</h3>
+
+<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+        <div class="form-floating mb-3">
+            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+            <label asp-for="Input.Email"></label>
+            <span asp-validation-for="Input.Email" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Input.Document" class="form-control" autocomplete="document" aria-required="true" placeholder="1116000000" />
+            <label asp-for="Input.Document"></label>
+            <span asp-validation-for="Input.Document" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Input.FirstName" class="form-control" autocomplete="FirstName" aria-required="true" placeholder="Juan" />
+            <label asp-for="Input.FirstName"></label>
+            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Input.LastName" class="form-control" autocomplete="LastName" aria-required="true" placeholder="Perez" />
+            <label asp-for="Input.LastName"></label>
+            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <select asp-for="Input.GenderId" asp-items="ViewBag.GenderId" class="form-control" aria-required="true"></select>
+            <label asp-for="Input.GenderId"></label>
+            <span asp-validation-for="Input.GenderId" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input asp-for="Input.Phone" class="form-control" autocomplete="Phone" aria-required="true" placeholder="Calle 25 No 32-56" />
+            <label asp-for="Input.Phone"></label>
+            <span asp-validation-for="Input.Phone" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-md-4 col-md-offset-2">
+        <div class="form-floating mb-3">
+            <select id="cityId" asp-for="Input.CityId" asp-items="ViewBag.CityId" class="form-control" aria-required="true"></select>
+            <label asp-for="Input.CityId"></label>
+            <span asp-validation-for="Input.CityId" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <select id="zoneId" asp-for="Input.ZoneId" asp-items="ViewBag.ZoneId" class="form-control" aria-required="true"></select>
+            <label asp-for="Input.ZoneId"></label>
+            <span asp-validation-for="Input.ZoneId" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <select id="communeTownshipId" asp-for="Input.CommuneTownshipId" asp-items="ViewBag.CommuneTownshipId" class="form-control" aria-required="true"></select>
+            <label id="labelCommuneTownshipId" asp-for="Input.CommuneTownshipId"></label>
+            <span asp-validation-for="Input.CommuneTownshipId" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <select id="neighborhoodSidewalkId" asp-for="Input.NeighborhoodSidewalkId" asp-items="ViewBag.NeighborhoodSidewalkId" class="form-control" aria-required="true"></select>
+            <label id="lblNeighborhoodSidewalkId" asp-for="Input.NeighborhoodSidewalkId"></label>
+            <span asp-validation-for="Input.NeighborhoodSidewalkId" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input asp-for="Input.Address" class="form-control" autocomplete="Address" aria-required="true" placeholder="Calle 25 No 32-56" />
+            <label asp-for="Input.Address"></label>
+            <span asp-validation-for="Input.Address" class="text-danger"></span>
+        </div>
+
+
+
+        <div class="d-flex align-items-center justify-content-between mt-2">
+            <div class="form-floating mb-3 d-flex align-items-center">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3 px-1">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword"></label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+    </div>
+</div>
+</form>    
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        $(document).ready(function () {           
+
+            $("#zoneId").change(function () {
+                if($("#zoneId").val()==2){
+                    $("#labelCommuneTownshipId").text("Comunas");
+                    $("#lblNeighborhoodSidewalkId").text("Barrios");
+                }
+                else{
+                    $("#labelCommuneTownshipId").text("Corregimeintos");
+                    $("#lblNeighborhoodSidewalkId").text("Veredas");
+                }
+
+                $("#communeTownshipId").empty();
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/CommuneTownships/GetCommun/',
+                    dataType: 'json',
+                    data: {cityId:$("#cityId").val() ,zoneId: $("#zoneId").val() },
+                    success: function (states) {
+                        $.each(states, function (i, state) {
+                            $("#communeTownshipId").append('<option value="'
+                                + state.id + '">'
+                                + state.name + '</option>');
+                        });                        
+                    },
+                    error: function (ex) {
+                        alert('Failed to retrieve states.' + ex);
+                    }
+                });
+                return false;
+            })
+
+
+            $("#communeTownshipId").change(function () {
+                $("#neighborhoodSidewalkId").empty();
+                $.ajax({
+                    type: 'GET',
+                    url: '/CommuneTownships/GetNeighborhood/',
+                    dataType: 'json',
+                    data: {communeTownshipId:$("#communeTownshipId").val() },
+                    success: function (data) {
+                        $.each(data, function (i, data) {
+                            $("#neighborhoodSidewalkId").append('<option value="'
+                                + data.id + '">'
+                                + data.name + '</option>');
+                        });                        
+                    },
+                    error: function (ex) {
+                        alert('Failed to retrieve states.' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+}
